@@ -26,7 +26,7 @@ header { position: sticky; top:0; background: linear-gradient(90deg, #ff6f61, #f
 .filters { text-align:center; margin:20px 0; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
 .filters button { padding:10px 20px; border:none; border-radius:50px; background:#ff6f61; color:#fff; font-weight:bold; cursor:pointer; transition:0.3s; }
 .filters button.active, .filters button:hover { background:#ff3b2e; transform:scale(1.05); }
-.products { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:20px; padding:20px; max-width:1200px; margin:auto; }
+.products { display:grid; gap:20px; padding:20px; max-width:1200px; margin:auto; }
 .product-card { background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 5px 20px rgba(0,0,0,0.1); transform:translateY(50px); opacity:0; transition:0.5s; }
 .product-card.visible { transform:translateY(0); opacity:1; }
 .slider { position:relative; width:100%; height:250px; overflow:hidden; }
@@ -95,7 +95,6 @@ const observer = new IntersectionObserver(entries=>{
   });
 },{ threshold:0.2 });
 
-// JSON files for categories
 const categories = {
   "all": ["data/skincare.json","data/accessories.json","data/tshirts.json","data/jeans.json","data/cargos.json","data/shirts.json","data/footwear.json"],
   "Skin Care Combo":["data/skincare.json"],
@@ -109,13 +108,17 @@ const categories = {
 
 const container = document.getElementById('products');
 
-async function displayProductsFromJSON(jsonFiles, layout='grid') {
+async function displayProductsFromJSON(jsonFiles, category){
   container.innerHTML = "";
-  container.style.gridTemplateColumns = layout === 'grid' ? 'repeat(auto-fit,minmax(250px,1fr))' : '1fr';
+  // Layout: Home = vertical, others = grid
+  container.style.gridTemplateColumns = category==="all" ? "1fr" : "repeat(auto-fit, minmax(250px,1fr)";
 
-  const fetches = jsonFiles.map(file => fetch(file).then(res => res.json()));
-  const allItemsArrays = await Promise.all(fetches);
-  const allItems = allItemsArrays.flat();
+  const allItems = [];
+  for(let file of jsonFiles){
+    const res = await fetch(file);
+    const items = await res.json();
+    allItems.push(...items);
+  }
 
   allItems.forEach(p => {
     const card = document.createElement('div');
@@ -150,10 +153,8 @@ async function displayProductsFromJSON(jsonFiles, layout='grid') {
 }
 
 async function filterProducts(category, btn){
-  let files = categories[category] || [];
-  let layout = category==='all' ? 'vertical' : 'grid';
-  if(category==='all') files = categories["all"];
-  await displayProductsFromJSON(files, layout);
+  const files = categories[category] || [];
+  await displayProductsFromJSON(category==='all' ? categories['all'] : files, category);
 
   document.querySelectorAll('.filters button, .sidebar a').forEach(el=>el.classList.remove('active'));
   if(btn) btn.classList.add('active');
@@ -170,4 +171,4 @@ filterProducts('all');
 </script>
 
 </body>
-  </html>
+</html>
