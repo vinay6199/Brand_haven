@@ -26,7 +26,7 @@ header { position: sticky; top:0; background: linear-gradient(90deg, #ff6f61, #f
 .filters { text-align:center; margin:20px 0; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
 .filters button { padding:10px 20px; border:none; border-radius:50px; background:#ff6f61; color:#fff; font-weight:bold; cursor:pointer; transition:0.3s; }
 .filters button.active, .filters button:hover { background:#ff3b2e; transform:scale(1.05); }
-.products { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:20px; padding:20px; max-width:1200px; margin:auto; }
+.products { display:grid; grid-template-columns:1fr; gap:20px; padding:20px; max-width:1200px; margin:auto; } /* vertical scrolling */
 .product-card { background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 5px 20px rgba(0,0,0,0.1); transform:translateY(50px); opacity:0; transition:0.5s; }
 .product-card.visible { transform:translateY(0); opacity:1; }
 .slider { position:relative; width:100%; height:250px; overflow:hidden; }
@@ -61,10 +61,9 @@ footer { background:#333; color:#fff; text-align:center; padding:30px 20px; font
 
 <div class="sidebar" id="sidebar">
   <a onclick="filterProducts('all', this)">Home</a>
-  <a onclick="filterProducts('all-brands', this)">All Brands</a>
   <a onclick="filterProducts('Skin Care Combo', this)">Skin Care Combo</a>
   <a onclick="filterProducts('Accessories', this)">Accessories</a>
-  <a onclick="filterProducts('Trendy T-Shirts', this)">Trendy T-Shirts</a>
+  <a onclick="filterProducts('T-Shirts', this)">T-Shirts</a>
   <a onclick="filterProducts('Jeans', this)">Jeans</a>
   <a onclick="filterProducts('Cargoes', this)">Cargoes</a>
   <a onclick="filterProducts('Shirts', this)">Shirts</a>
@@ -74,10 +73,9 @@ footer { background:#333; color:#fff; text-align:center; padding:30px 20px; font
 
 <section class="filters">
   <button onclick="filterProducts('all', this)">Home</button>
-  <button onclick="filterProducts('all-brands', this)">All Brands</button>
   <button onclick="filterProducts('Skin Care Combo', this)">Skin Care Combo</button>
   <button onclick="filterProducts('Accessories', this)">Accessories</button>
-  <button onclick="filterProducts('Trendy T-Shirts', this)">Trendy T-Shirts</button>
+  <button onclick="filterProducts('T-Shirts', this)">T-Shirts</button>
   <button onclick="filterProducts('Jeans', this)">Jeans</button>
   <button onclick="filterProducts('Cargoes', this)">Cargoes</button>
   <button onclick="filterProducts('Shirts', this)">Shirts</button>
@@ -97,12 +95,11 @@ const observer = new IntersectionObserver(entries=>{
   });
 },{ threshold:0.2 });
 
-// JSON files for categories
 const categories = {
   "all": ["data/skincare.json","data/accessories.json","data/tshirts.json","data/jeans.json","data/cargos.json","data/shirts.json","data/footwear.json"],
   "Skin Care Combo":["data/skincare.json"],
   "Accessories":["data/accessories.json"],
-  "Trendy T-Shirts":["data/tshirts.json"],
+  "T-Shirts":["data/tshirts.json"],
   "Jeans":["data/jeans.json"],
   "Cargoes":["data/cargos.json"],
   "Shirts":["data/shirts.json"],
@@ -120,7 +117,6 @@ async function displayProductsFromJSON(jsonFiles){
       const card = document.createElement('div');
       card.className="product-card";
 
-      // Slider
       let sliderHTML = `<div class="slider">`;
       p.images.forEach((img,i)=>{ sliderHTML += `<img src="${img}" class="${i===0?'active':''}">`; });
       sliderHTML += `<button class="prev">&#10094;</button><button class="next">&#10095;</button><div class="slide-count">1/${p.images.length}</div></div>`;
@@ -136,7 +132,6 @@ async function displayProductsFromJSON(jsonFiles){
       container.appendChild(card);
       observer.observe(card);
 
-      // Slider functionality
       const slider = card.querySelector('.slider');
       const imgs = slider.querySelectorAll('img');
       const prev = slider.querySelector('.prev');
@@ -151,7 +146,8 @@ async function displayProductsFromJSON(jsonFiles){
 }
 
 async function filterProducts(category, btn){
-  let files = category==="all"? categories["all"]: categories[category]||[];
+  let files = categories[category] || [];
+  if(category==="all") files = categories["all"];
   await displayProductsFromJSON(files);
   document.querySelectorAll('.filters button, .sidebar a').forEach(el=>el.classList.remove('active'));
   if(btn) btn.classList.add('active');
