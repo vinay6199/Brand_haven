@@ -1,1 +1,12 @@
-
+[
+  {
+    "name": "Cargo Pants",
+    "desc": "Adventure ready",
+    "images": [
+      "https://picsum.photos/300/250?random=5",
+      "https://picsum.photos/300/250?random=51"
+    ],
+    "link": "https://affiliate-link-5.com",
+    "brand": "Top Brand E"
+  }
+]
