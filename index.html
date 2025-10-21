@@ -110,14 +110,18 @@ const container = document.getElementById('products');
 
 async function displayProductsFromJSON(jsonFiles, category){
   container.innerHTML = "";
-  // Layout: Home = vertical, others = grid
-  container.style.gridTemplateColumns = category==="all" ? "1fr" : "repeat(auto-fit, minmax(250px,1fr)";
+  container.style.gridTemplateColumns = category==="all" ? "1fr" : "repeat(auto-fit, minmax(250px, 1fr))";
 
   const allItems = [];
   for(let file of jsonFiles){
-    const res = await fetch(file);
-    const items = await res.json();
-    allItems.push(...items);
+    try{
+      const res = await fetch(file);
+      if(!res.ok){ console.error("Failed to load:", file); continue; }
+      const items = await res.json();
+      allItems.push(...items);
+    } catch(e){
+      console.error("Error fetching:", file, e);
+    }
   }
 
   allItems.forEach(p => {
