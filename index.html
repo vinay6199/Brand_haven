@@ -26,8 +26,7 @@ header { position: sticky; top:0; background: linear-gradient(90deg, #ff6f61, #f
 .filters { text-align:center; margin:20px 0; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
 .filters button { padding:10px 20px; border:none; border-radius:50px; background:#ff6f61; color:#fff; font-weight:bold; cursor:pointer; transition:0.3s; }
 .filters button.active, .filters button:hover { background:#ff3b2e; transform:scale(1.05); }
-/* Default vertical layout (Home) */
-.products { display:grid; grid-template-columns:1fr; gap:20px; padding:20px; max-width:1200px; margin:auto; } 
+.products { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:20px; padding:20px; max-width:1200px; margin:auto; }
 .product-card { background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 5px 20px rgba(0,0,0,0.1); transform:translateY(50px); opacity:0; transition:0.5s; }
 .product-card.visible { transform:translateY(0); opacity:1; }
 .slider { position:relative; width:100%; height:250px; overflow:hidden; }
@@ -96,6 +95,7 @@ const observer = new IntersectionObserver(entries=>{
   });
 },{ threshold:0.2 });
 
+// JSON files for categories
 const categories = {
   "all": ["data/skincare.json","data/accessories.json","data/tshirts.json","data/jeans.json","data/cargos.json","data/shirts.json","data/footwear.json"],
   "Skin Care Combo":["data/skincare.json"],
@@ -109,49 +109,52 @@ const categories = {
 
 const container = document.getElementById('products');
 
-async function displayProductsFromJSON(jsonFiles, layout='grid'){
-  container.innerHTML="";
-  container.style.gridTemplateColumns = layout==='grid' ? 'repeat(auto-fit,minmax(250px,1fr))' : '1fr';
-  for(let file of jsonFiles){
-    const res = await fetch(file);
-    const items = await res.json();
-    items.forEach(p=>{
-      const card = document.createElement('div');
-      card.className="product-card";
+async function displayProductsFromJSON(jsonFiles, layout='grid') {
+  container.innerHTML = "";
+  container.style.gridTemplateColumns = layout === 'grid' ? 'repeat(auto-fit,minmax(250px,1fr))' : '1fr';
 
-      let sliderHTML = `<div class="slider">`;
-      p.images.forEach((img,i)=>{ sliderHTML += `<img src="${img}" class="${i===0?'active':''}">`; });
-      sliderHTML += `<button class="prev">&#10094;</button><button class="next">&#10095;</button><div class="slide-count">1/${p.images.length}</div></div>`;
+  const fetches = jsonFiles.map(file => fetch(file).then(res => res.json()));
+  const allItemsArrays = await Promise.all(fetches);
+  const allItems = allItemsArrays.flat();
 
-      card.innerHTML = `
-        ${sliderHTML}
-        <div class="info">
-          <h2>${p.name}</h2>
-          <p>${p.desc}</p>
-          <a href="${p.link}" target="_blank">Buy Now</a>
-        </div>
-      `;
-      container.appendChild(card);
-      observer.observe(card);
+  allItems.forEach(p => {
+    const card = document.createElement('div');
+    card.className="product-card";
 
-      const slider = card.querySelector('.slider');
-      const imgs = slider.querySelectorAll('img');
-      const prev = slider.querySelector('.prev');
-      const next = slider.querySelector('.next');
-      const count = slider.querySelector('.slide-count');
-      let current=0;
-      function updateSlider(){ imgs.forEach((img,i)=>img.classList.toggle('active',i===current)); count.textContent=`${current+1}/${imgs.length}`; }
-      prev.addEventListener('click',()=>{ current=(current-1+imgs.length)%imgs.length; updateSlider(); });
-      next.addEventListener('click',()=>{ current=(current+1)%imgs.length; updateSlider(); });
-    });
-  }
+    let sliderHTML = `<div class="slider">`;
+    p.images.forEach((img,i)=>{ sliderHTML += `<img src="${img}" class="${i===0?'active':''}">`; });
+    sliderHTML += `<button class="prev">&#10094;</button><button class="next">&#10095;</button><div class="slide-count">1/${p.images.length}</div></div>`;
+
+    card.innerHTML = `
+      ${sliderHTML}
+      <div class="info">
+        <h2>${p.name}</h2>
+        <p>${p.desc}</p>
+        <a href="${p.link}" target="_blank">Buy Now</a>
+      </div>
+    `;
+    container.appendChild(card);
+    observer.observe(card);
+
+    // Slider
+    const slider = card.querySelector('.slider');
+    const imgs = slider.querySelectorAll('img');
+    const prev = slider.querySelector('.prev');
+    const next = slider.querySelector('.next');
+    const count = slider.querySelector('.slide-count');
+    let current=0;
+    function updateSlider(){ imgs.forEach((img,i)=>img.classList.toggle('active',i===current)); count.textContent=`${current+1}/${imgs.length}`; }
+    prev.addEventListener('click',()=>{ current=(current-1+imgs.length)%imgs.length; updateSlider(); });
+    next.addEventListener('click',()=>{ current=(current+1)%imgs.length; updateSlider(); });
+  });
 }
 
 async function filterProducts(category, btn){
   let files = categories[category] || [];
   let layout = category==='all' ? 'vertical' : 'grid';
-  if(category==="all") files = categories["all"];
+  if(category==='all') files = categories["all"];
   await displayProductsFromJSON(files, layout);
+
   document.querySelectorAll('.filters button, .sidebar a').forEach(el=>el.classList.remove('active'));
   if(btn) btn.classList.add('active');
   if(btn && btn.parentElement.classList.contains('sidebar')) toggleMenu();
@@ -167,4 +170,4 @@ filterProducts('all');
 </script>
 
 </body>
-</html>
+  </html>
