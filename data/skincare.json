@@ -1,14 +1,11 @@
-
 [
   {
     "name": "Lakme Skin Care Combo",
     "desc": "Daily use combo for glowing skin – includes face wash and cream.",
     "link": "https://www.amazon.in/dp/B09XYZ9876?tag=your-affiliate-id",
     "images": [
-      "https://m.media-amazon.com/images/I/61c7u0NmygL._SL1500_.jpg",
-      "https://m.media-amazon.com/images/I/61xJHk+HfFL._SL1500_.jpg"
+      "images/skincare/lakme1.jpg",
+      "images/skincare/lakme2.jpg"
     ]
   }
 ]
-
-  
