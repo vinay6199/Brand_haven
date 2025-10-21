@@ -1,15 +1,14 @@
 
+[
   {
-    "name": "Maybelline",
-    "desc": "colour: 657 nudr grey",
+    "name": "Lakme Skin Care Combo",
+    "desc": "Daily use combo for glowing skin – includes face wash and cream.",
+    "link": "https://www.amazon.in/dp/B09XYZ9876?tag=your-affiliate-id",
     "images": [
-      "https://surl.li/mbuhft",
-      "https://surl.li/qipskl",
-      "https://surl.li/mvseel"
-    ],
-    "link": "https://surl.lu/untmlx",
-    "brand": "Top Brand A"
+      "https://m.media-amazon.com/images/I/61c7u0NmygL._SL1500_.jpg",
+      "https://m.media-amazon.com/images/I/61xJHk+HfFL._SL1500_.jpg"
+    ]
   }
-
+]
 
   
